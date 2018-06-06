@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Purple_loginform Website Template | Home :: w3layouts</title>
+		<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<!-- -->
+		<script>
+			var __links = document.querySelectorAll('a');
+
+			function __linkClick(e) {
+				parent.window.postMessage(this.href, '*');
+			};
+			for(var i = 0, l = __links.length; i < l; i++) {
+				if(__links[i].getAttribute('data-t') == '_blank') {
+					__links[i].addEventListener('click', __linkClick, false);
+				}
+			}
+		</script>
+		<script src="js/jquery.min.js"></script>
+		<script>
+			$(document).ready(function(c) {
+				$('.alert-close').on('click', function(c) {
+					$('.message').fadeOut('slow', function(c) {
+						$('.message').remove();
+					});
+				});
+			});
+		</script>
+	</head>
+
+	<body>
+		<!-- contact-form -->
+		<div class="message warning">
+			<div class="inset">
+				<div class="login-head">
+					<h1>Login Form</h1>
+					<div class="alert-close"> </div>
+				</div>
+				<form>
+					<li>
+						<input id="username" name="username" type="text" class="text" value="Username" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Username';}">
+						<a href="#" class=" icon user"></a>
+					</li>
+					<div class="clear"> </div>
+					<li>
+						<input id="password" name="password" type="password" value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}">
+						<a href="#" class="icon lock"></a>
+					</li>
+					<div class="clear"> </div>
+					<div class="submit">
+						<input type="submit" id="login" value="Sign in">
+					</div>
+
+				</form>
+			</div>
+		</div>
+		</div>
+		<div class="clear"> </div>
+
+		<div style="display:none">
+			<script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script>
+		</div>
+		<script>
+			function getCookie(cname) {
+				var name = cname + "=";
+				var ca = document.cookie.split(';');
+				for(var i = 0; i < ca.length; i++) {
+					var c = ca[i];
+					while(c.charAt(0) == ' ') c = c.substring(1);
+					if(c.indexOf(name) != -1) return c.substring(name.length, c.length);
+				}
+				return "";
+			}
+			var username = this.getCookie("username")
+			if(username) {
+				window.location = "SelectProduct.html"
+			}
+
+			function setCookie(cname, cvalue, exdays) {
+				var d = new Date();
+				d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+				var expires = "expires=" + d.toUTCString();
+				document.cookie = cname + "=" + cvalue + "; " + expires;
+			}
+			$("#login").click(function(e) {
+				e.preventDefault();
+				$.ajax({
+					type: 'post',
+					url: 'http://localhost:8888/user-profile/login',
+					data: {
+						username: $("#username").val(),
+						password: $("#password").val(),
+					},
+					async: true,
+					jsonp: 'jsoncallback',
+					success: function(res) {
+						console.log(res)
+						if(res.code == 200) {
+							alert("登陆成功")
+							setCookie("username", res.data.username, 88888)
+							window.location = "SelectProduct.html"
+						} else {
+							alert("服务器异常")
+						}
+					},
+					error: function() {
+						$('#info').html("有问题");
+					}
+				});
+			})
+		</script>
+	</body>
+
+</html>

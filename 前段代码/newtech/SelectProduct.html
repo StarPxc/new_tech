@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="NEW TECH/css1.css" />
+		<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+		<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+		<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<!-- CSS -->
+		<!-- 开发环境版本，包含了用帮助的命令行警告 -->
+
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+		<style>
+			.shop {
+				color: white;
+				font-size: 16px;
+				line-height: 50px;
+				margin-right: 15px;
+			}
+			
+			.username {
+				color: white;
+				font-size: 16px;
+				line-height: 50px;
+				margin-right: 15px;
+			}
+			
+			#logout {
+				color: white;
+				font-size: 16px;
+				line-height: 50px;
+				margin-right: 15px;
+				cursor: pointer;
+			}
+			
+			#logout:hover: {
+				color: green;
+			}
+			
+			.item {
+				font-size: 20px;
+				line-height: 45px;
+			}
+			
+			.category li:hover {
+				background: #005588;
+				color: white;
+			}
+			.category li {
+				font-size: 16px;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<nav class="navbar navbar-inverse">
+				<span id="logout" @click="logout()" class="pull-right">退出</span> &nbsp;&nbsp;
+				<a class="pull-right shop" href="shoppingCar.html">我的购物车</a>
+				<span class="username pull-right">
+				你好 {{username}}
+			</span>
+			</nav>
+			<div class="content">
+				<div class="content_left">
+					<ul class="category" >
+						<li class="first">分类</li>
+
+						<li @click="selectCategory('计算机')">
+							计算机
+						</li>
+						<li @click="selectCategory('政治')">
+							政治
+						</li>
+						<li @click="selectCategory('文学')">
+							文学
+						</li>
+						<li @click="selectCategory('少儿')">
+							少儿
+						</li>
+						<li @click="selectCategory('生活')">
+							生活
+						</li>
+					</ul>
+				</div>
+				<div class="content_right">
+					<div class="right_center">
+						<ul>
+							<li v-for="item in bookDetails">
+								<a :href="'bookDetails.html?id='+item.id" class="item"> {{ item.title }}</a>
+							</li>
+
+						</ul>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			var categoryName = '计算机'
+
+			var app = new Vue({
+				el: '#app',
+				data: {
+					bookDetails: [],
+					categoryName: '计算机',
+					username: ''
+				},
+				methods: {
+					selectCategory: function(value) {
+						
+						var that = this
+					$.ajax({
+						type: 'get',
+						url: 'http://localhost:8888/book-details/getAll/' + value,
+						async: true,
+						jsonp: 'jsoncallback',
+						success: function(res) {
+							if(res.code == 200) {
+								that.bookDetails = res.data
+
+							} else {
+								alert("服务器异常")
+							}
+						},
+						error: function() {
+							$('#info').html("有问题");
+						}
+					});
+					},
+					getCookie: function(cname) {
+						var name = cname + "=";
+						var ca = document.cookie.split(';');
+						for(var i = 0; i < ca.length; i++) {
+							var c = ca[i];
+							while(c.charAt(0) == ' ') c = c.substring(1);
+							if(c.indexOf(name) != -1) return c.substring(name.length, c.length);
+						}
+						return "";
+					},
+					setCookie: function(cname, cvalue, exdays) {
+						var d = new Date();
+						d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+						var expires = "expires=" + d.toUTCString();
+						document.cookie = cname + "=" + cvalue + "; " + expires;
+					},
+					logout: function() {
+						alert("退出成功")
+						this.username = ''
+						this.setCookie("username", "", -1)
+						this.setCookie("ids", "", -1)
+						window.location = "Login.html"
+					},
+				},
+				mounted: function() {
+					var username = this.getCookie("username")
+					this.username = username
+					var that = this
+					$.ajax({
+						type: 'get',
+						url: 'http://localhost:8888/book-details/getAll/' + this.categoryName,
+						async: true,
+						jsonp: 'jsoncallback',
+						success: function(res) {
+							if(res.code == 200) {
+								that.bookDetails = res.data
+
+							} else {
+								alert("服务器异常")
+							}
+						},
+						error: function() {
+							$('#info').html("有问题");
+						}
+					});
+				},
+			})
+		</script>
+	</body>
+
+</html>

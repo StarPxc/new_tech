@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>书本详情</title>
+		<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+		<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+		<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+		<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<!-- CSS -->
+		<!-- 开发环境版本，包含了用帮助的命令行警告 -->
+
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<style>
+			.shoppingCart {
+				float: right;
+			}
+			
+			.shop {
+				color: white;
+				font-size: 16px;
+				line-height: 50px;
+				margin-right: 15px;
+			}
+			
+			.username {
+				color: white;
+				font-size: 16px;
+				line-height: 50px;
+				margin-right: 15px;
+			}
+			
+			#logout {
+				color: white;
+				font-size: 16px;
+				line-height: 50px;
+				margin-right: 15px;
+				cursor: pointer;
+			}
+			
+			#logout:hover: {
+				color: green;
+			}
+			
+			.my-panel {
+				padding-bottom: 60px;
+			}
+			
+			.sum-money {
+				color: #058;
+				margin-right: 15px;
+				font-size: 16px;
+			}
+			.index{
+				color: white;
+				font-size: 16px;
+				line-height: 50px;
+				margin-right: 15px;
+				cursor: pointer;
+				text-decoration: none;
+				margin-left: 15px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="container">
+			<nav class="navbar navbar-inverse">
+				<a class="pull-left index" href="SelectProduct.html">
+					首页
+				</a>
+				<span id="logout" @click="logout()" class="pull-right">退出</span> &nbsp;&nbsp;
+				<a class="pull-right shop" href="shoppingCar.html">我的购物车</a>
+				<span class="username pull-right">
+				你好 {{username}}
+			</span>
+			</nav>
+			<div class="panel panel-primary my-panel">
+				<div class="panel-heading">订单详情</div>
+				<div class="panel-body">
+					<table class="table">
+						<tr>
+							<th>书名</th>
+							<th>作者</th>
+							<th>价格</th>
+							<th>数量</th>
+							<th>isbn</th>
+							<th>删除</th>
+						</tr>
+						<tr v-for="item in books">
+
+							<td>{{item.title}}</td>
+							<td>{{item.author}}</td>
+							<td>{{item.price}}</td>
+							<td>{{item.count}}</td>
+							<td>{{item.isbn}}</td>
+							<td><button v-on:click="deleteId(item.id)" class="btn btn-danger">删除</button></td>
+						</tr>
+
+					</table>
+
+				</div>
+
+				<div class="shoppingCart ">
+					<span class="sum-money">
+						总价 :&nbsp;{{sumMoney}} &yen; &nbsp; or &nbsp; {{sumMoney/100*15.6148 | money}} $
+						
+					</span>
+					<button class="btn btn-success" data-toggle="modal" data-target="#myModal">立即支付</button>
+				</div>
+			</div>
+
+			<!-- Modal -->
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title" id="myModalLabel">确认支付</h4>
+						</div>
+						<div class="modal-body">
+							<form>
+								<div class="form-group">
+									<label for="bill_num">订单号</label>
+									<input type="text" disabled="disabled" class="form-control" id="bill_num" :value="billNum">
+								</div>
+								<div class="form-group">
+									<label for="total_amount">总计</label>
+									<input type="text" disabled="disabled" class="form-control" id="total_amount" :value="sumMoney+'元'">
+								</div>
+								<div class="form-group">
+									<label for="name">选择列表</label>
+									<select class="form-control" id="creditcardType">
+										<option value="农业银行">农业银行</option>
+										<option value="交通银行">交通银行</option>
+										<option value="建设银行">建设银行</option>
+
+									</select>
+
+								</div>
+								<div class="form-group">
+									<label for="creditcardNum">卡号</label>
+									<input type="text" class="form-control" id="creditcardNum" placeholder="卡号">
+								</div>
+
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+							<button type="button" @click="pay" class="btn btn-primary">确认支付</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			Vue.filter('money', function(val) {
+				val = val.toString().replace(/\$|\,/g, '');
+				if(isNaN(val)) {
+					val = "0";
+				}
+				let sign = (val == (val = Math.abs(val)));
+				val = Math.floor(val * 100 + 0.50000000001);
+				let cents = val % 100;
+				val = Math.floor(val / 100).toString();
+				if(cents < 10) {
+					cents = "0" + cents
+				}
+				for(var i = 0; i < Math.floor((val.length - (1 + i)) / 3); i++) {
+					val = val.substring(0, val.length - (4 * i + 3)) + ',' + val.substring(val.length - (4 * i + 3));
+				}
+
+				return(((sign) ? '' : '-') + val + '.' + cents);
+			})
+			var app = new Vue({
+				el: '#app',
+				data: {
+					books: [],
+					sumMoney: 0,
+					amount: 0,
+					billNum: 0
+				},
+				methods: {
+					//设置cookie
+					setCookie: function(cname, cvalue, exdays) {
+						var d = new Date();
+						d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+						var expires = "expires=" + d.toUTCString();
+						document.cookie = cname + "=" + cvalue + "; " + expires;
+					},
+					//获取cookie
+					getCookie: function(cname) {
+						var name = cname + "=";
+						var ca = document.cookie.split(';');
+						for(var i = 0; i < ca.length; i++) {
+							var c = ca[i];
+							while(c.charAt(0) == ' ') c = c.substring(1);
+							if(c.indexOf(name) != -1) return c.substring(name.length, c.length);
+						}
+						return "";
+					},
+					deleteId: function(id) {
+
+						var idsStr = this.getCookie("ids");
+
+						ids = idsStr.split(",")
+						var index = ids.indexOf(id + "");
+
+						if(index > -1) {
+							ids.splice(index, 1);
+							idsStr = ''
+							ids.forEach(function(value) {
+								idsStr = idsStr + value + ','
+							})
+							this.setCookie("ids", idsStr, 10000);
+
+							for(var i = 0; i < this.books.length; i++) {
+
+								if(this.books[i].id == id) {
+									this.books[i].count--;
+
+								} else {
+
+								}
+							}
+							console.log(this.books)
+						}
+
+					},
+					logout: function() {
+						alert("退出成功")
+						this.username = ''
+						this.setCookie("username", "", -1)
+						this.setCookie("ids", "", -1)
+						window.location = "Login.html"
+					},
+					pay: function() {
+						var userUsername = this.getCookie("username")
+						var creditCardType = $("#creditcardType").val()
+						var creditCardNum = $("#creditcardNum").val()
+						var totalAmount = this.sumMoney
+						var billNum = this.billNum
+						var data = {
+							billNum: billNum,
+							userUsername: userUsername,
+							creditCardType: creditCardType,
+							creditCardNum: creditCardNum,
+							totalAmount: totalAmount
+						}
+						console.log(data)
+						var that = this
+						$.ajax({
+							type: 'post',
+							url: 'http://localhost:8888/payment/addPayment',
+							contentType: 'application/json',
+							data: JSON.stringify(data),
+							jsonp: 'jsoncallback',
+							success: function(res) {
+								if(res.code == 200) {
+									console.log(res)
+									alert("支付成功")
+									$('#myModal').modal('hide')
+									that.books.forEach(function(item) {
+										var billNum = that.billNum
+										var quantity = item.count
+										var price = item.price
+										var date = new Date()
+										var bookId = item.id
+										var data = {
+											billNum: billNum,
+											quantity: quantity,
+											price: price,
+											date: date,
+											bookId: bookId
+										}
+										$.ajax({
+											type: 'post',
+											url: 'http://localhost:8888/bill/addBill',
+											contentType: 'application/json',
+											data: JSON.stringify(data),
+											jsonp: 'jsoncallback',
+											success: function(res) {
+												if(res.code == 200) {
+													console.log(res)
+
+													//删除购物车
+													that.setCookie("ids", "", -1)
+													window.location='SelectProduct.html'
+												} else {
+													alert("服务器异常")
+												}
+											},
+											error: function() {
+												$('#info').html("有问题");
+											}
+										});
+
+									})
+
+								} else {
+									alert("服务器异常")
+								}
+							},
+							error: function() {
+								$('#info').html("有问题");
+							}
+						});
+					}
+				},
+				mounted: function() {
+					this.username = this.getCookie("username")
+					this.billNum = Date.parse(new Date())
+					var ids = this.getCookie("ids");
+					var countList = Array.apply(null, Array(1000)).map(() => 0)
+					ids.split(",").forEach(function(value) {
+						countList[parseInt(value)]++;
+					})
+
+					idsSet = new Set(ids.split(","))
+					ids = []
+					for(let item of idsSet) ids.push(item);
+
+					var that = this
+					$.ajax({
+						type: 'post',
+						url: 'http://localhost:8888/book-details/getBookByIds',
+						data: {
+							ids: ids
+						},
+						jsonp: 'jsoncallback',
+						success: function(res) {
+							if(res.code == 200) {
+								bookList = res.data
+								bookList.forEach(function(item) {
+									item.count = countList[parseInt(item.id)]
+									that.sumMoney = that.sumMoney + item.count * parseInt(item.price)
+									that.amount = that.amount + item.count
+								})
+								that.books = bookList
+
+							} else {
+								alert("服务器异常")
+							}
+						},
+						error: function() {
+							$('#info').html("有问题");
+						}
+					});
+				},
+			})
+		</script>
+	</body>
+
+</html>
