@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    name: newtech
+    password: 935377012
+    username: root
+    url: jdbc:mysql://localhost:3306/new_tech?useUnicode=true&characterEncoding=utf8
+

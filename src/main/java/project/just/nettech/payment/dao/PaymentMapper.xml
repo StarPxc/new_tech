@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="project.just.nettech.payment.dao.PaymentMapper" >
+  <resultMap id="BaseResultMap" type="project.just.nettech.payment.entity.Payment" >
+    <id column="bill_num" property="billNum" jdbcType="VARCHAR" />
+    <result column="user_username" property="userUsername" jdbcType="VARCHAR" />
+    <result column="credit_card_type" property="creditCardType" jdbcType="VARCHAR" />
+    <result column="credit_card_num" property="creditCardNum" jdbcType="VARCHAR" />
+    <result column="total_amount" property="totalAmount" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    bill_num, user_username, credit_card_type, credit_card_num, total_amount
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from payment
+    where bill_num = #{billNum,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from payment
+    where bill_num = #{billNum,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="project.just.nettech.payment.entity.Payment" >
+    insert into payment (bill_num, user_username, credit_card_type, 
+      credit_card_num, total_amount)
+    values (#{billNum,jdbcType=VARCHAR}, #{userUsername,jdbcType=VARCHAR}, #{creditCardType,jdbcType=VARCHAR}, 
+      #{creditCardNum,jdbcType=VARCHAR}, #{totalAmount,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="project.just.nettech.payment.entity.Payment" >
+    insert into payment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="billNum != null" >
+        bill_num,
+      </if>
+      <if test="userUsername != null" >
+        user_username,
+      </if>
+      <if test="creditCardType != null" >
+        credit_card_type,
+      </if>
+      <if test="creditCardNum != null" >
+        credit_card_num,
+      </if>
+      <if test="totalAmount != null" >
+        total_amount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="billNum != null" >
+        #{billNum,jdbcType=VARCHAR},
+      </if>
+      <if test="userUsername != null" >
+        #{userUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="creditCardType != null" >
+        #{creditCardType,jdbcType=VARCHAR},
+      </if>
+      <if test="creditCardNum != null" >
+        #{creditCardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="totalAmount != null" >
+        #{totalAmount,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="project.just.nettech.payment.entity.Payment" >
+    update payment
+    <set >
+      <if test="userUsername != null" >
+        user_username = #{userUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="creditCardType != null" >
+        credit_card_type = #{creditCardType,jdbcType=VARCHAR},
+      </if>
+      <if test="creditCardNum != null" >
+        credit_card_num = #{creditCardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="totalAmount != null" >
+        total_amount = #{totalAmount,jdbcType=INTEGER},
+      </if>
+    </set>
+    where bill_num = #{billNum,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="project.just.nettech.payment.entity.Payment" >
+    update payment
+    set user_username = #{userUsername,jdbcType=VARCHAR},
+      credit_card_type = #{creditCardType,jdbcType=VARCHAR},
+      credit_card_num = #{creditCardNum,jdbcType=VARCHAR},
+      total_amount = #{totalAmount,jdbcType=INTEGER}
+    where bill_num = #{billNum,jdbcType=VARCHAR}
+  </update>
+</mapper>
