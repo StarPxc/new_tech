@@ -8,22 +8,20 @@ NIIT的project作业，通过这个小项目对以往所学的基础进行查漏
 ### 前后端交互
 #### 跨域问题 
 后端加一个跨域的配置类[CorsConfig.java](https://github.com/StarPxc/new_tech/blob/master/src/main/java/project/just/nettech/common/config/CorsConfig.java)
-前端模版代码
+<br>前端模版代码
 ```javascript
-	$.ajax({
-					type: 'post',
-					url: 'http://localhost:8888/user-profile/login',
-					data: {
-						username: $("#username").val(),
-						password: $("#password").val(),
-					},
-					success: function(res) {
-						
-					},
-					error: function() {
-						
-					}
-				});
+$.ajax({
+    type: 'post',
+    url: 'http://localhost:8888/user-profile/login',
+    data: {
+        username: $("#username").val(),
+        password: $("#password").val(),
+    },
+    success: function(res) {						
+    },
+    error: function() {
+    }
+    });
 ```  
 #### 参数匹配问题
 - @RequestParam对应的是 data:data 
@@ -38,18 +36,18 @@ NIIT的project作业，通过这个小项目对以往所学的基础进行查漏
 ```
 前端书写方式
 ```javascript
-		$.ajax({
-						type: 'post',
-						url: 'http://localhost:8888/book-details/getBookByIds',
-						data: {
-							ids: ids
-						},
-						success: function(res) {
-						
-						},
-						error: function() {
-							
-						}
+$.ajax({
+    type: 'post',
+    url: 'http://localhost:8888/book-details/getBookByIds',
+    data: {
+	    ids: ids
+    },
+    success: function(res) {
+
+    },
+    error: function() {
+	
+    }
 					});
 ```
 **注意后台的写法@RequestParam( value = "ids[]",required = false)** value一定是要加"[]"的
